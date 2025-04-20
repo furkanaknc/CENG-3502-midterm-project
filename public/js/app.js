@@ -6,7 +6,6 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "&copy; OpenStreetMap contributors",
 }).addTo(map);
 
-
 const API_BASE_URL = window.API_BASE_URL || "http://localhost:5000/api";
 
 let landmarks = []; // Store landmarks
@@ -14,18 +13,113 @@ let currentLandmarkIndex = 0; // For tracking which landmark we are adding notes
 let selectedLandmarks = []; // For storing selected landmarks for visit plan
 let markers = []; // Store markers for easy reference
 let visitedLandmarks = []; // Store visited landmarks IDs
+let authToken = localStorage.getItem("authToken"); // Store authentication token
+let currentUser = null; // Store current user data
 
-// Fetch existing landmarks from the database when page loads
+// Check if user is logged in
+function isLoggedIn() {
+  return !!authToken;
+}
+
+// Function to set auth token and user data
+function setAuth(token, userData) {
+  authToken = token;
+  currentUser = userData;
+  localStorage.setItem("authToken", token);
+  localStorage.setItem("userData", JSON.stringify(userData));
+
+  // Update UI based on authentication status
+  updateAuthUI();
+}
+
+// Function to clear auth token and user data (logout)
+function clearAuth() {
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("userData");
+
+  // Update UI based on authentication status
+  updateAuthUI();
+}
+
+// Update UI elements based on authentication status
+function updateAuthUI() {
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const registerBtn = document.getElementById("registerBtn");
+  const userDisplay = document.getElementById("userDisplay");
+  const landmarkControls = document.getElementById("landmarkControls");
+
+  if (isLoggedIn()) {
+    // User is logged in
+    loginBtn.style.display = "none";
+    registerBtn.style.display = "none";
+    logoutBtn.style.display = "inline-block";
+    userDisplay.style.display = "inline-block";
+    userDisplay.textContent = `Welcome, ${currentUser.username}`;
+    landmarkControls.style.display = "block";
+
+    // Fetch landmarks for the logged-in user
+    fetchLandmarks();
+  } else {
+    // User is logged out
+    loginBtn.style.display = "inline-block";
+    registerBtn.style.display = "inline-block";
+    logoutBtn.style.display = "none";
+    userDisplay.style.display = "none";
+    landmarkControls.style.display = "none";
+
+    // Clear landmarks when logged out
+    landmarks = [];
+    markers.forEach((marker) => map.removeLayer(marker));
+    markers = [];
+    updateLandmarkList();
+  }
+}
+
+// Function to handle API requests with authentication
+function authenticatedFetch(url, options = {}) {
+  if (!isLoggedIn()) {
+    alert("Please log in to access this feature.");
+    showAuthModal("login");
+    return Promise.reject("Not authenticated");
+  }
+
+  // Set default options if not provided
+  options = options || {};
+  options.headers = options.headers || {};
+
+  // Add authorization header
+  options.headers["Authorization"] = `Bearer ${authToken}`;
+
+  return fetch(url, options).then((response) => {
+    if (response.status === 401) {
+      // If unauthorized, clear auth data and show login
+      clearAuth();
+      alert("Your session has expired. Please log in again.");
+      showAuthModal("login");
+      return Promise.reject("Authentication expired");
+    }
+    return response;
+  });
+}
+
+// Fetch existing landmarks from the database when user is logged in
 function fetchLandmarks() {
+  if (!isLoggedIn()) {
+    return;
+  }
+
   // First load all visited landmarks to check against
-  fetch(`${API_BASE_URL}/visited`)
+  authenticatedFetch(`${API_BASE_URL}/visited`)
     .then((response) => response.json())
     .then((visitedData) => {
       // Store visited landmark IDs for quick lookup
       visitedLandmarks = visitedData.map((visit) => visit.landmark._id);
 
       // Then load all landmarks
-      return fetch(`${API_BASE_URL}/landmarks`);
+      return authenticatedFetch(`${API_BASE_URL}/landmarks`);
     })
     .then((response) => response.json())
     .then((data) => {
@@ -137,11 +231,33 @@ function createPopupContent(landmark) {
   return content;
 }
 
-// Call fetchLandmarks when page loads
-document.addEventListener("DOMContentLoaded", fetchLandmarks);
+// Call function to check authentication when page loads
+document.addEventListener("DOMContentLoaded", function () {
+  // Try to load user data if available
+  const savedUserData = localStorage.getItem("userData");
+  if (authToken && savedUserData) {
+    try {
+      currentUser = JSON.parse(savedUserData);
+      updateAuthUI();
+    } catch (e) {
+      // If there's an error parsing saved data, clear auth
+      clearAuth();
+    }
+  } else {
+    // No saved auth data, update UI to show login/register buttons
+    updateAuthUI();
+  }
+});
 
 // Add landmark on map click
 map.on("click", function (e) {
+  // Check if user is logged in before allowing to add landmarks
+  if (!isLoggedIn()) {
+    alert("Please log in to add landmarks.");
+    showAuthModal("login");
+    return;
+  }
+
   var lat = e.latlng.lat.toFixed(6);
   var lng = e.latlng.lng.toFixed(6);
 
@@ -308,11 +424,12 @@ function updateLandmarkList() {
   });
 }
 
-// Modal handling
+// Modal handling - Add authentication modals
 const addNotesModal = document.getElementById("addNotesModal");
 const visitedModal = document.getElementById("visitedModal");
 const planVisitModal = document.getElementById("planVisitModal");
 const visitHistoryModal = document.getElementById("visitHistoryModal");
+const authModal = document.getElementById("authModal");
 
 // Close buttons
 document.getElementById("closeNotesModal").onclick = () =>
@@ -323,6 +440,8 @@ document.getElementById("closePlanModal").onclick = () =>
   (planVisitModal.style.display = "none");
 document.getElementById("closeVisitHistoryModal").onclick = () =>
   (visitHistoryModal.style.display = "none");
+document.getElementById("closeAuthModal").onclick = () =>
+  (authModal.style.display = "none");
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function (event) {
@@ -331,10 +450,17 @@ window.onclick = function (event) {
   if (event.target === planVisitModal) planVisitModal.style.display = "none";
   if (event.target === visitHistoryModal)
     visitHistoryModal.style.display = "none";
+  if (event.target === authModal) authModal.style.display = "none";
 };
 
-// Add Notes Button
+// Add Notes Button - Require authentication
 document.getElementById("addNotesBtn").addEventListener("click", function () {
+  if (!isLoggedIn()) {
+    alert("Please log in to add notes to landmarks.");
+    showAuthModal("login");
+    return;
+  }
+
   if (landmarks.length === 0) {
     alert("No landmarks selected! Click on the map to add landmarks.");
     return;
@@ -355,7 +481,7 @@ document.getElementById("addNotesBtn").addEventListener("click", function () {
   addNotesModal.style.display = "block";
 });
 
-// Handle Notes Form Submission
+// Handle Notes Form Submission - Updated to use authenticatedFetch
 document.getElementById("notesForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
@@ -371,8 +497,8 @@ document.getElementById("notesForm").addEventListener("submit", function (e) {
   landmarks[currentLandmarkIndex].description = description;
   landmarks[currentLandmarkIndex].notes = notes;
 
-  // Send to backend
-  fetch(`${API_BASE_URL}/landmarks`, {
+  // Send to backend with authentication
+  authenticatedFetch(`${API_BASE_URL}/landmarks`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -394,6 +520,7 @@ document.getElementById("notesForm").addEventListener("submit", function (e) {
       if (markers[currentLandmarkIndex]) {
         markers[currentLandmarkIndex].setPopupContent(
           createPopupContent({
+            _id: data._id,
             name: name,
             location: {
               latitude: landmarks[currentLandmarkIndex].latitude,
@@ -416,10 +543,16 @@ document.getElementById("notesForm").addEventListener("submit", function (e) {
     });
 });
 
-// Visited Landmarks Button
+// Visited Landmarks Button - Updated to use authenticatedFetch
 document.getElementById("visitedBtn").addEventListener("click", function () {
+  if (!isLoggedIn()) {
+    alert("Please log in to view visited landmarks.");
+    showAuthModal("login");
+    return;
+  }
+
   // Fetch visited landmarks from backend
-  fetch(`${API_BASE_URL}/visited`)
+  authenticatedFetch(`${API_BASE_URL}/visited`)
     .then((response) => response.json())
     .then((data) => {
       const visitedList = document.getElementById("visitedLandmarks");
@@ -457,8 +590,14 @@ document.getElementById("visitedBtn").addEventListener("click", function () {
     });
 });
 
-// Create Visiting Plan Button
+// Create Visiting Plan Button - Updated to use authenticatedFetch
 document.getElementById("planVisitBtn").addEventListener("click", function () {
+  if (!isLoggedIn()) {
+    alert("Please log in to create a visiting plan.");
+    showAuthModal("login");
+    return;
+  }
+
   if (landmarks.length === 0) {
     alert("No landmarks selected! Click on the map to add landmarks.");
     return;
@@ -534,13 +673,19 @@ document.getElementById("planVisitBtn").addEventListener("click", function () {
   planVisitModal.style.display = "block";
 });
 
-// Toggle visit status function
+// Toggle visit status function - Updated to use authenticatedFetch
 function toggleVisitStatus(landmarkId) {
+  if (!isLoggedIn()) {
+    alert("Please log in to mark landmarks as visited.");
+    showAuthModal("login");
+    return;
+  }
+
   const isCurrentlyVisited = isVisited(landmarkId);
 
   if (isCurrentlyVisited) {
     // If already visited, find the visit record to delete
-    fetch(`${API_BASE_URL}/visited`)
+    authenticatedFetch(`${API_BASE_URL}/visited`)
       .then((response) => response.json())
       .then((visits) => {
         // Find the visit record for this landmark
@@ -548,9 +693,12 @@ function toggleVisitStatus(landmarkId) {
 
         if (visitRecord) {
           // Delete the visit record
-          return fetch(`${API_BASE_URL}/visited/${visitRecord._id}`, {
-            method: "DELETE",
-          });
+          return authenticatedFetch(
+            `${API_BASE_URL}/visited/${visitRecord._id}`,
+            {
+              method: "DELETE",
+            }
+          );
         }
       })
       .then((response) => {
@@ -574,14 +722,14 @@ function toggleVisitStatus(landmarkId) {
       });
   } else {
     // If not visited, add a new visit record
-    fetch(`${API_BASE_URL}/visited`, {
+    authenticatedFetch(`${API_BASE_URL}/visited`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         landmarkId: landmarkId,
-        visitor_name: "Visiter",
+        visitor_name: currentUser ? currentUser.username : "Visitor",
         additional_notes: "",
       }),
     })
@@ -630,9 +778,15 @@ function updateVisitButtonsForLandmark(landmarkId) {
   updateLandmarkList();
 }
 
-// Handle Plan Form Submission
+// Handle Plan Form Submission - Updated to use authenticatedFetch
 document.getElementById("planForm").addEventListener("submit", function (e) {
   e.preventDefault();
+
+  if (!isLoggedIn()) {
+    alert("Please log in to create a visiting plan.");
+    showAuthModal("login");
+    return;
+  }
 
   const visitorName = document.getElementById("visitorName").value;
 
@@ -659,8 +813,8 @@ document.getElementById("planForm").addEventListener("submit", function (e) {
     // Simply use the new note directly - no formatting or prefixes
     const updatedNotes = notes;
 
-    // Update landmark notes
-    return fetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
+    // Update landmark notes with authentication
+    return authenticatedFetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -678,6 +832,7 @@ document.getElementById("planForm").addEventListener("submit", function (e) {
         if (markers[landmarkIndex]) {
           markers[landmarkIndex].setPopupContent(
             createPopupContent({
+              _id: landmarkId,
               name: landmark.name,
               location: {
                 latitude: landmark.latitude,
@@ -707,12 +862,18 @@ document.getElementById("planForm").addEventListener("submit", function (e) {
     });
 });
 
-// Delete landmark function
+// Delete landmark function - Updated to use authenticatedFetch
 function deleteLandmark(landmarkId) {
+  if (!isLoggedIn()) {
+    alert("Please log in to delete landmarks.");
+    showAuthModal("login");
+    return;
+  }
+
   // Ask for confirmation
   if (confirm("Are you sure you want to delete this landmark?")) {
     // Delete from backend first
-    fetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
+    authenticatedFetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
       method: "DELETE",
     })
       .then((response) => {
@@ -754,8 +915,14 @@ function deleteLandmark(landmarkId) {
   }
 }
 
-// View Visit History function
+// View Visit History function - Updated to use authenticatedFetch
 function viewVisitHistory(landmarkId) {
+  if (!isLoggedIn()) {
+    alert("Please log in to view visit history.");
+    showAuthModal("login");
+    return;
+  }
+
   // First get the landmark details
   const landmark = landmarks.find((l) => l._id === landmarkId);
 
@@ -782,7 +949,7 @@ function viewVisitHistory(landmarkId) {
   `;
 
   // Fetch visit history for this specific landmark
-  fetch(`${API_BASE_URL}/visited/${landmarkId}`)
+  authenticatedFetch(`${API_BASE_URL}/visited/${landmarkId}`)
     .then((response) => {
       // Handle 404 status (no visits found) in a user-friendly way
       if (response.status === 404) {
@@ -841,8 +1008,14 @@ function viewVisitHistory(landmarkId) {
     });
 }
 
-// Edit landmark function
+// Edit landmark function - Updated to use authenticatedFetch
 function editLandmark(landmarkId) {
+  if (!isLoggedIn()) {
+    alert("Please log in to edit landmarks.");
+    showAuthModal("login");
+    return;
+  }
+
   // Find landmark in our array
   const landmarkIndex = landmarks.findIndex((l) => l._id === landmarkId);
 
@@ -890,8 +1063,8 @@ function editLandmark(landmarkId) {
     landmarks[landmarkIndex].description = description;
     landmarks[landmarkIndex].notes = notes;
 
-    // Send PUT request to update the landmark
-    fetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
+    // Send PUT request to update the landmark with authentication
+    authenticatedFetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -942,3 +1115,178 @@ function editLandmark(landmarkId) {
       });
   };
 }
+
+// Show Auth Modal (login or register)
+function showAuthModal(mode = "login") {
+  // Get the Auth UI container
+  const authUIContainer = document.getElementById("authUIContainer");
+
+  if (mode === "login") {
+    authUIContainer.innerHTML = `
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email:</label>
+          <input type="email" id="loginEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password:</label>
+          <input type="password" id="loginPassword" name="password" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Login</button>
+          <button type="button" id="switchToRegister" class="btn-link">Need an account? Register</button>
+        </div>
+      </form>
+    `;
+
+    // Add event listener for switching to register
+    document
+      .getElementById("switchToRegister")
+      .addEventListener("click", () => showAuthModal("register"));
+
+    // Add event listener for login form submission
+    document
+      .getElementById("loginForm")
+      .addEventListener("submit", handleLogin);
+  } else {
+    authUIContainer.innerHTML = `
+      <h2>Register</h2>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="registerUsername">Username:</label>
+          <input type="text" id="registerUsername" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Email:</label>
+          <input type="email" id="registerEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Password:</label>
+          <input type="password" id="registerPassword" name="password" required minlength="6">
+          <small>Password must be at least 6 characters long</small>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Register</button>
+          <button type="button" id="switchToLogin" class="btn-link">Already have an account? Login</button>
+        </div>
+      </form>
+    `;
+
+    // Add event listener for switching to login
+    document
+      .getElementById("switchToLogin")
+      .addEventListener("click", () => showAuthModal("login"));
+
+    // Add event listener for register form submission
+    document
+      .getElementById("registerForm")
+      .addEventListener("submit", handleRegister);
+  }
+
+  // Display the modal
+  authModal.style.display = "block";
+}
+
+// Handle login form submission
+function handleLogin(e) {
+  e.preventDefault();
+
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // Store auth token and user data
+      setAuth(data.token, {
+        _id: data._id,
+        username: data.username,
+        email: data.email,
+      });
+
+      // Close the modal
+      authModal.style.display = "none";
+
+      // Notify user
+      alert(`Welcome back, ${data.username}!`);
+
+      // Fetch landmarks for the user
+      fetchLandmarks();
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("Login failed. Please check your credentials and try again.");
+    });
+}
+
+// Handle register form submission
+function handleRegister(e) {
+  e.preventDefault();
+
+  const username = document.getElementById("registerUsername").value;
+  const email = document.getElementById("registerEmail").value;
+  const password = document.getElementById("registerPassword").value;
+
+  fetch(`${API_BASE_URL}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username, email, password }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // Store auth token and user data
+      setAuth(data.token, {
+        _id: data._id,
+        username: data.username,
+        email: data.email,
+      });
+
+      // Close the modal
+      authModal.style.display = "none";
+
+      // Notify user
+      alert(`Registration successful! Welcome, ${data.username}!`);
+
+      // Fetch landmarks for the user
+      fetchLandmarks();
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("Registration failed. This email might already be registered.");
+    });
+}
+
+// Login button click handler
+document.getElementById("loginBtn").addEventListener("click", () => {
+  showAuthModal("login");
+});
+
+// Register button click handler
+document.getElementById("registerBtn").addEventListener("click", () => {
+  showAuthModal("register");
+});
+
+// Logout button click handler
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  clearAuth();
+  alert("You have been logged out successfully.");
+});

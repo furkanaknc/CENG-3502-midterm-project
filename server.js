@@ -55,10 +55,12 @@ mongoose
 // Import routes
 const landmarkRoutes = require("./routes/landmarkRoutes");
 const visitedRoutes = require("./routes/visitedRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 // Use routes
 app.use("/api/landmarks", landmarkRoutes);
 app.use("/api/visited", visitedRoutes);
+app.use("/api/auth", authRoutes);
 
 // Start server
 app.listen(PORT, () => {

@@ -10,25 +10,38 @@
     />
     <link rel="stylesheet" href="/public/css/styles.css" />
 
-     <!-- Add environment configuration script -->
+    <!-- Add environment configuration script -->
     <script>
-      const protocol = window.location.protocol; 
+      const protocol = window.location.protocol;
       const hostname = window.location.hostname;
       const port = window.location.port ? `:${window.location.port}` : "";
-     
+
       window.API_BASE_URL = `${protocol}//${hostname}${port}/api`;
     </script>
   </head>
   <body>
+    <!-- Auth navigation bar -->
+    <div class="auth-nav">
+      <span id="userDisplay" style="display: none">Welcome, User</span>
+      <button id="loginBtn" class="auth-btn">Login</button>
+      <button id="registerBtn" class="auth-btn">Register</button>
+      <button id="logoutBtn" class="auth-btn" style="display: none">
+        Logout
+      </button>
+    </div>
+
     <h2>Click on the Map to Add Landmarks</h2>
     <div id="map"></div>
 
     <h3>Selected Landmarks</h3>
     <ul id="landmarkList"></ul>
 
-    <button id="addNotesBtn">Add Notes</button>
-    <button id="visitedBtn">Visited Landmarks</button>
-    <button id="planVisitBtn">Create Visiting Plans</button>
+    <!-- Landmark controls container for showing/hiding based on authentication -->
+    <div id="landmarkControls" style="display: none">
+      <button id="addNotesBtn">Add Notes</button>
+      <button id="visitedBtn">Visited Landmarks</button>
+      <button id="planVisitBtn">Create Visiting Plans</button>
+    </div>
 
     <!-- Add Notes Modal -->
     <div id="addNotesModal" class="modal">
@@ -97,6 +110,16 @@
           </div>
           <button type="submit">Save Plan</button>
         </form>
+      </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeAuthModal">&times;</span>
+        <div id="authUIContainer">
+          <!-- Login/Register forms will be loaded here dynamically -->
+        </div>
       </div>
     </div>
 
