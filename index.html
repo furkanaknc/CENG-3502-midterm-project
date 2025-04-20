@@ -9,6 +9,11 @@
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
     <link rel="stylesheet" href="/public/css/styles.css" />
+    <!-- Add environment configuration script -->
+    <script>
+      
+      window.API_BASE_URL = "http://<%= process.env.API_BASE_URL %>:5000/api";
+    </script>
   </head>
   <body>
     <h2>Click on the Map to Add Landmarks</h2>

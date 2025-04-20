@@ -6,6 +6,9 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "&copy; OpenStreetMap contributors",
 }).addTo(map);
 
+
+const API_BASE_URL = window.API_BASE_URL || "http://localhost:5000/api";
+
 let landmarks = []; // Store landmarks
 let currentLandmarkIndex = 0; // For tracking which landmark we are adding notes to
 let selectedLandmarks = []; // For storing selected landmarks for visit plan
@@ -15,14 +18,14 @@ let visitedLandmarks = []; // Store visited landmarks IDs
 // Fetch existing landmarks from the database when page loads
 function fetchLandmarks() {
   // First load all visited landmarks to check against
-  fetch("http://localhost:5000/api/visited")
+  fetch(`${API_BASE_URL}/visited`)
     .then((response) => response.json())
     .then((visitedData) => {
       // Store visited landmark IDs for quick lookup
       visitedLandmarks = visitedData.map((visit) => visit.landmark._id);
 
       // Then load all landmarks
-      return fetch("http://localhost:5000/api/landmarks");
+      return fetch(`${API_BASE_URL}/landmarks`);
     })
     .then((response) => response.json())
     .then((data) => {
@@ -369,7 +372,7 @@ document.getElementById("notesForm").addEventListener("submit", function (e) {
   landmarks[currentLandmarkIndex].notes = notes;
 
   // Send to backend
-  fetch("http://localhost:5000/api/landmarks", {
+  fetch(`${API_BASE_URL}/landmarks`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -416,7 +419,7 @@ document.getElementById("notesForm").addEventListener("submit", function (e) {
 // Visited Landmarks Button
 document.getElementById("visitedBtn").addEventListener("click", function () {
   // Fetch visited landmarks from backend
-  fetch("http://localhost:5000/api/visited")
+  fetch(`${API_BASE_URL}/visited`)
     .then((response) => response.json())
     .then((data) => {
       const visitedList = document.getElementById("visitedLandmarks");
@@ -537,7 +540,7 @@ function toggleVisitStatus(landmarkId) {
 
   if (isCurrentlyVisited) {
     // If already visited, find the visit record to delete
-    fetch("http://localhost:5000/api/visited")
+    fetch(`${API_BASE_URL}/visited`)
       .then((response) => response.json())
       .then((visits) => {
         // Find the visit record for this landmark
@@ -545,7 +548,7 @@ function toggleVisitStatus(landmarkId) {
 
         if (visitRecord) {
           // Delete the visit record
-          return fetch(`http://localhost:5000/api/visited/${visitRecord._id}`, {
+          return fetch(`${API_BASE_URL}/visited/${visitRecord._id}`, {
             method: "DELETE",
           });
         }
@@ -571,7 +574,7 @@ function toggleVisitStatus(landmarkId) {
       });
   } else {
     // If not visited, add a new visit record
-    fetch("http://localhost:5000/api/visited", {
+    fetch(`${API_BASE_URL}/visited`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -657,7 +660,7 @@ document.getElementById("planForm").addEventListener("submit", function (e) {
     const updatedNotes = notes;
 
     // Update landmark notes
-    return fetch(`http://localhost:5000/api/landmarks/${landmarkId}`, {
+    return fetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -709,7 +712,7 @@ function deleteLandmark(landmarkId) {
   // Ask for confirmation
   if (confirm("Are you sure you want to delete this landmark?")) {
     // Delete from backend first
-    fetch(`http://localhost:5000/api/landmarks/${landmarkId}`, {
+    fetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
       method: "DELETE",
     })
       .then((response) => {
@@ -779,7 +782,7 @@ function viewVisitHistory(landmarkId) {
   `;
 
   // Fetch visit history for this specific landmark
-  fetch(`http://localhost:5000/api/visited/${landmarkId}`)
+  fetch(`${API_BASE_URL}/visited/${landmarkId}`)
     .then((response) => {
       // Handle 404 status (no visits found) in a user-friendly way
       if (response.status === 404) {
@@ -888,7 +891,7 @@ function editLandmark(landmarkId) {
     landmarks[landmarkIndex].notes = notes;
 
     // Send PUT request to update the landmark
-    fetch(`http://localhost:5000/api/landmarks/${landmarkId}`, {
+    fetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -902,7 +905,6 @@ function editLandmark(landmarkId) {
     })
       .then((response) => response.json())
       .then((data) => {
-
         // Update marker popup content
         if (markers[landmarkIndex]) {
           markers[landmarkIndex].setPopupContent(
