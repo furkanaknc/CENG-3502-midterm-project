@@ -9,10 +9,14 @@
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
     <link rel="stylesheet" href="/public/css/styles.css" />
-    <!-- Add environment configuration script -->
+
+     <!-- Add environment configuration script -->
     <script>
-      
-      window.API_BASE_URL = "http://<%= process.env.API_BASE_URL %>:5000/api";
+      const protocol = window.location.protocol; 
+      const hostname = window.location.hostname;
+      const port = window.location.port ? `:${window.location.port}` : "";
+     
+      window.API_BASE_URL = `${protocol}//${hostname}${port}/api`;
     </script>
   </head>
   <body>
