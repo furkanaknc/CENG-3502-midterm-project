@@ -2,13 +2,20 @@ const express = require("express");
 const router = express.Router();
 const VisitedLandmark = require("../models/VisitedLandmark");
 const Landmark = require("../models/Landmark");
+const { protect } = require("../middleware/authMiddleware");
+
+// Apply protection middleware to all routes
+router.use(protect);
 
 // @route   GET /api/visited
-// @desc    Get all visited landmarks
-// @access  Public
+// @desc    Get all visited landmarks for the logged-in user
+// @access  Private
 router.get("/", async (req, res) => {
   try {
-    const visitedLandmarks = await VisitedLandmark.find().populate("landmark");
+    // Only fetch visited landmarks that belong to the current user
+    const visitedLandmarks = await VisitedLandmark.find({
+      user: req.user._id,
+    }).populate("landmark");
     res.json(visitedLandmarks);
   } catch (err) {
     console.error(err);
@@ -17,12 +24,14 @@ router.get("/", async (req, res) => {
 });
 
 // @route   GET /api/visited/:id
-// @desc    Get visit history for specific landmark
-// @access  Public
+// @desc    Get visit history for specific landmark for the logged-in user
+// @access  Private
 router.get("/:id", async (req, res) => {
   try {
+    // Only fetch visited landmarks that belong to the current user
     const visitedLandmarks = await VisitedLandmark.find({
       landmark: req.params.id,
+      user: req.user._id,
     }).populate("landmark");
 
     if (visitedLandmarks.length === 0) {
@@ -40,7 +49,7 @@ router.get("/:id", async (req, res) => {
 
 // @route   POST /api/visited
 // @desc    Record a visited landmark
-// @access  Public
+// @access  Private
 router.post("/", async (req, res) => {
   try {
     const { landmarkId, visitor_name, additional_notes } = req.body;
@@ -51,12 +60,20 @@ router.post("/", async (req, res) => {
       return res.status(404).json({ message: "Landmark not found" });
     }
 
-    // Create new visited landmark record
+    // Check if the landmark belongs to the current user
+    if (landmark.user.toString() !== req.user._id.toString()) {
+      return res
+        .status(401)
+        .json({ message: "Not authorized to mark this landmark as visited" });
+    }
+
+    // Create new visited landmark record with user ID
     const visitedLandmark = new VisitedLandmark({
       landmark: landmarkId,
       visitor_name,
       additional_notes,
       visited_date: new Date(),
+      user: req.user._id, // Associate with the logged-in user
     });
 
     await visitedLandmark.save();
@@ -75,7 +92,7 @@ router.post("/", async (req, res) => {
 
 // @route   PUT /api/visited/:id
 // @desc    Update a visit record
-// @access  Public
+// @access  Private
 router.put("/:id", async (req, res) => {
   try {
     const { visitor_name, additional_notes, visited_date } = req.body;
@@ -90,6 +107,13 @@ router.put("/:id", async (req, res) => {
 
     if (!visitRecord) {
       return res.status(404).json({ message: "Visit record not found" });
+    }
+
+    // Check if the visit record belongs to the current user
+    if (visitRecord.user.toString() !== req.user._id.toString()) {
+      return res
+        .status(401)
+        .json({ message: "Not authorized to update this visit record" });
     }
 
     // Update
@@ -108,7 +132,7 @@ router.put("/:id", async (req, res) => {
 
 // @route   DELETE /api/visited/:id
 // @desc    Delete a visit record
-// @access  Public
+// @access  Private
 router.delete("/:id", async (req, res) => {
   try {
     const visitRecord = await VisitedLandmark.findById(req.params.id);
@@ -117,7 +141,14 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "Visit record not found" });
     }
 
-    await visitRecord.remove();
+    // Check if the visit record belongs to the current user
+    if (visitRecord.user.toString() !== req.user._id.toString()) {
+      return res
+        .status(401)
+        .json({ message: "Not authorized to delete this visit record" });
+    }
+
+    await VisitedLandmark.deleteOne({ _id: req.params.id });
 
     res.json({ message: "Visit record removed" });
   } catch (err) {

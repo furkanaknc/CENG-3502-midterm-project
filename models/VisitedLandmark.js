@@ -18,6 +18,11 @@ const VisitedLandmarkSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("VisitedLandmark", VisitedLandmarkSchema);

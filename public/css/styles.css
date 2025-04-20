@@ -6,6 +6,103 @@ body {
   padding: 20px;
 }
 
+/* Auth navigation styling */
+.auth-nav {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 20px;
+  background-color: #f8f9fa;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+#userDisplay {
+  margin-right: auto;
+  font-weight: bold;
+  padding: 8px 0;
+  color: #333;
+}
+
+.auth-btn {
+  margin-left: 10px;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#loginBtn {
+  background-color: #007bff;
+  color: white;
+}
+
+#registerBtn {
+  background-color: #28a745;
+  color: white;
+}
+
+#logoutBtn {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Authentication modal styling */
+#authModal .modal-content {
+  max-width: 400px;
+}
+
+#authUIContainer h2 {
+  margin-top: 0;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#authUIContainer .form-group {
+  margin-bottom: 15px;
+}
+
+#authUIContainer label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+#authUIContainer input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+#authUIContainer .form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.btn-primary {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
 #map {
   height: 500px;
   width: 80%;
