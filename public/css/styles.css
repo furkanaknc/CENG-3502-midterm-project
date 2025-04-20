@@ -1,0 +1,299 @@
+/* Main styling */
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+#map {
+  height: 500px;
+  width: 80%;
+  margin: auto;
+  border: 2px solid black;
+  border-radius: 8px;
+}
+
+#landmarkList {
+  margin-top: 10px;
+  text-align: left;
+  width: 80%;
+  margin: 20px auto;
+  padding-left: 0;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+}
+
+/* Form elements */
+.form-group {
+  margin: 15px 0;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button {
+  margin: 10px 5px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Modal styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 70%;
+  border-radius: 5px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Visited items styling */
+#visitedLandmarks {
+  list-style-type: none;
+  padding: 0;
+}
+
+.visitedItem {
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  border-left: 4px solid #007bff;
+}
+
+/* Landmark selection styling */
+.landmark-selection-item {
+  text-align: left;
+  margin-bottom: 10px;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.landmark-selection-item label {
+  display: inline;
+  margin-left: 5px;
+}
+
+.landmark-note-input {
+  margin-top: 5px;
+  display: none;
+}
+
+/* Landmark list styling */
+.landmark-list-item {
+  list-style: none;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.landmark-header {
+  padding: 10px;
+  background-color: #f1f1f1;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+}
+
+.landmark-header:hover {
+  background-color: #e1e1e1;
+}
+
+.landmark-header::after {
+  content: "▼";
+  position: absolute;
+  right: 10px;
+}
+
+.landmark-details {
+  padding: 10px 15px;
+  border-top: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.view-landmark-btn {
+  padding: 5px 10px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.current-notes {
+  margin: 8px 0;
+  padding: 5px;
+  background-color: #f0f8ff;
+  border-radius: 4px;
+  border-left: 3px solid #007bff;
+}
+
+.current-notes pre {
+  margin: 5px 0;
+  font-family: inherit;
+}
+
+/* Popup styling */
+.popup-content h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.popup-content p {
+  margin: 5px 0;
+}
+
+.popup-content pre {
+  border: 1px solid #ddd;
+  background-color: #f5f5f5;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+/* Button styles */
+.visited-button {
+  padding: 6px 12px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: block;
+  width: 100%;
+}
+
+.visited-button:not(.visited) {
+  background-color: #28a745;
+  color: white;
+}
+
+.visited-button.visited {
+  background-color: #dc3545;
+  color: white;
+}
+
+.visited-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.delete-button {
+  padding: 6px 12px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  background-color: #dc3545;
+  color: white;
+  display: block;
+  width: 100%;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.edit-button {
+  padding: 6px 12px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  background-color: #ffc107;
+  color: #212529;
+  display: block;
+  width: 100%;
+}
+
+.edit-button:hover {
+  background-color: #e0a800;
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* History button styles */
+.history-button {
+  padding: 6px 12px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  background-color: #17a2b8;
+  color: white;
+  display: block;
+  width: 100%;
+}
+
+.history-button:hover {
+  background-color: #138496;
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.landmark-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
