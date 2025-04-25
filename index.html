@@ -33,6 +33,45 @@
     <h2>Click on the Map to Add Landmarks</h2>
     <div id="map"></div>
 
+    <!-- Search and Filter section -->
+    <div
+      class="search-filter-container"
+      id="searchFilterContainer"
+      style="display: none"
+    >
+      <h3>Search and Filter Landmarks</h3>
+      <form id="landmarkSearchForm">
+        <div class="search-filter-row">
+          <div class="form-group">
+            <label for="searchText">Search</label>
+            <input
+              type="text"
+              id="searchText"
+              placeholder="Search by name, description or notes"
+            />
+          </div>
+          <div class="form-group">
+            <label for="categoryFilter">Category</label>
+            <select id="categoryFilter">
+              <option value="all">All Categories</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="visitedFilter">Status</label>
+            <select id="visitedFilter">
+              <option value="all">All</option>
+              <option value="visited">Visited</option>
+              <option value="not-visited">Not Visited</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-filter-buttons">
+          <button type="submit">Search</button>
+          <button type="button" id="resetFilters">Reset</button>
+        </div>
+      </form>
+    </div>
+
     <h3>Selected Landmarks</h3>
     <ul id="landmarkList"></ul>
 
@@ -125,5 +164,6 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/public/js/app.js"></script>
+    <script src="/public/js/search-filter.js"></script>
   </body>
 </html>

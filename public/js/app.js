@@ -50,6 +50,9 @@ function updateAuthUI() {
   const registerBtn = document.getElementById("registerBtn");
   const userDisplay = document.getElementById("userDisplay");
   const landmarkControls = document.getElementById("landmarkControls");
+  const searchFilterContainer = document.getElementById(
+    "searchFilterContainer"
+  );
 
   if (isLoggedIn()) {
     // User is logged in
@@ -59,6 +62,7 @@ function updateAuthUI() {
     userDisplay.style.display = "inline-block";
     userDisplay.textContent = `Welcome, ${currentUser.username}`;
     landmarkControls.style.display = "block";
+    searchFilterContainer.style.display = "block";
 
     // Fetch landmarks for the logged-in user
     fetchLandmarks();
@@ -69,6 +73,7 @@ function updateAuthUI() {
     logoutBtn.style.display = "none";
     userDisplay.style.display = "none";
     landmarkControls.style.display = "none";
+    searchFilterContainer.style.display = "none";
 
     // Clear landmarks when logged out
     landmarks = [];
@@ -361,6 +366,30 @@ function updateLandmarkList() {
     });
     btnContainer.appendChild(viewBtn);
 
+    // Add select button to select this landmark for adding notes
+    let selectBtn = document.createElement("button");
+    selectBtn.textContent = "Select";
+    selectBtn.className = "select-landmark-btn";
+    selectBtn.style.marginLeft = "10px";
+    selectBtn.style.backgroundColor = "#28a745";
+    selectBtn.addEventListener("click", function (e) {
+      e.stopPropagation(); // Prevent the header's click event
+      currentLandmarkIndex = index;
+
+      // Give visual feedback to show this landmark is selected
+      document.querySelectorAll(".landmark-list-item").forEach((item) => {
+        item.classList.remove("selected-landmark");
+      });
+      li.classList.add("selected-landmark");
+
+      alert(
+        `Selected: ${
+          point.name || `Landmark ${index + 1}`
+        } - Now you can click "Add Notes" to edit this landmark.`
+      );
+    });
+    btnContainer.appendChild(selectBtn);
+
     // Add visited button if the landmark has an ID
     if (point._id) {
       // Edit button
@@ -422,7 +451,202 @@ function updateLandmarkList() {
     li.appendChild(details);
     list.appendChild(li);
   });
+
+  // After updating the landmark list, update the category filter options if search utility is loaded
+  if (typeof updateCategoryFilterOptions === "function") {
+    updateCategoryFilterOptions();
+  }
 }
+
+// Function to update landmark list with a specific array of landmarks (for search filtering)
+window.updateLandmarkListWithArray = function (landmarksToShow) {
+  let list = document.getElementById("landmarkList");
+  list.innerHTML = "";
+
+  landmarksToShow.forEach((point, index) => {
+    // Find the actual index in the original landmarks array
+    const originalIndex = landmarks.findIndex(
+      (l) =>
+        l.latitude === point.latitude &&
+        l.longitude === point.longitude &&
+        (l._id ? l._id === point._id : true)
+    );
+
+    let li = document.createElement("li");
+    li.className = "landmark-list-item";
+
+    // Check if this landmark is the currently selected one
+    if (originalIndex === currentLandmarkIndex) {
+      li.classList.add("selected-landmark");
+    }
+
+    // Create the expandable section
+    let header = document.createElement("div");
+    header.className = "landmark-header";
+    header.textContent = `${
+      point.name || `Landmark ${originalIndex + 1}`
+    }: Lat ${point.latitude}, Lng ${point.longitude}`;
+
+    // Add click handler to expand/collapse details
+    header.addEventListener("click", function () {
+      details.style.display =
+        details.style.display === "none" ? "block" : "none";
+    });
+
+    // Create details section
+    let details = document.createElement("div");
+    details.className = "landmark-details";
+    details.style.display = "none";
+
+    // Add category and description if available
+    if (point.category) {
+      let category = document.createElement("p");
+      category.textContent = `Category: ${point.category}`;
+      details.appendChild(category);
+    }
+
+    if (point.description) {
+      let desc = document.createElement("p");
+      desc.textContent = `Description: ${point.description}`;
+      details.appendChild(desc);
+    }
+
+    // Add notes if available
+    if (point.notes) {
+      let notesTitle = document.createElement("p");
+      notesTitle.textContent = "Notes:";
+      details.appendChild(notesTitle);
+
+      let notesContent = document.createElement("pre");
+      notesContent.textContent = point.notes;
+      notesContent.style.maxHeight = "100px";
+      notesContent.style.overflowY = "auto";
+      notesContent.style.whiteSpace = "pre-wrap";
+      notesContent.style.backgroundColor = "#f5f5f5";
+      notesContent.style.padding = "5px";
+      notesContent.style.borderRadius = "4px";
+      details.appendChild(notesContent);
+    }
+
+    // Create a button container for better alignment
+    let btnContainer = document.createElement("div");
+    btnContainer.className = "landmark-buttons";
+
+    // Add view button to center the map on this landmark
+    let viewBtn = document.createElement("button");
+    viewBtn.textContent = "View on Map";
+    viewBtn.className = "view-landmark-btn";
+    viewBtn.addEventListener("click", function (e) {
+      e.stopPropagation(); // Prevent the header's click event
+      map.setView([point.latitude, point.longitude], 13);
+
+      // Find and open the corresponding marker popup
+      if (originalIndex !== -1 && markers[originalIndex]) {
+        markers[originalIndex].openPopup();
+      }
+    });
+    btnContainer.appendChild(viewBtn);
+
+    // Add select button to select this landmark for adding notes
+    let selectBtn = document.createElement("button");
+    selectBtn.textContent = "Select";
+    selectBtn.className = "select-landmark-btn";
+    selectBtn.style.marginLeft = "10px";
+    selectBtn.style.backgroundColor = "#28a745";
+    selectBtn.addEventListener("click", function (e) {
+      e.stopPropagation(); // Prevent the header's click event
+
+      if (originalIndex !== -1) {
+        currentLandmarkIndex = originalIndex;
+
+        // Give visual feedback to show this landmark is selected
+        document.querySelectorAll(".landmark-list-item").forEach((item) => {
+          item.classList.remove("selected-landmark");
+        });
+        li.classList.add("selected-landmark");
+
+        alert(
+          `Selected: ${
+            point.name || `Landmark ${originalIndex + 1}`
+          } - Now you can click "Add Notes" to edit this landmark.`
+        );
+      }
+    });
+    btnContainer.appendChild(selectBtn);
+
+    // Add visited button if the landmark has an ID
+    if (point._id) {
+      // Edit button
+      let editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      editBtn.className = "edit-button";
+      editBtn.style.marginLeft = "10px";
+      editBtn.addEventListener("click", function (e) {
+        e.stopPropagation(); // Prevent the header's click event
+        editLandmark(point._id);
+      });
+      btnContainer.appendChild(editBtn);
+
+      // Visited button
+      const isAlreadyVisited = isVisited(point._id);
+      const visitBtnText = isAlreadyVisited
+        ? "Mark as Unvisited"
+        : "Mark as Visited";
+      const visitBtnClass = isAlreadyVisited
+        ? "visited-button visited"
+        : "visited-button";
+
+      let visitBtn = document.createElement("button");
+      visitBtn.textContent = visitBtnText;
+      visitBtn.className = visitBtnClass;
+      visitBtn.style.marginLeft = "10px";
+      visitBtn.addEventListener("click", function (e) {
+        e.stopPropagation(); // Prevent the header's click event
+        toggleVisitStatus(point._id);
+      });
+      btnContainer.appendChild(visitBtn);
+
+      // View Visit History button
+      let historyBtn = document.createElement("button");
+      historyBtn.textContent = "View Visit History";
+      historyBtn.className = "history-button";
+      historyBtn.style.marginLeft = "10px";
+      historyBtn.style.backgroundColor = "#17a2b8";
+      historyBtn.addEventListener("click", function (e) {
+        e.stopPropagation(); // Prevent the header's click event
+        viewVisitHistory(point._id);
+      });
+      btnContainer.appendChild(historyBtn);
+
+      // Delete button
+      let deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Delete";
+      deleteBtn.className = "delete-button";
+      deleteBtn.style.marginLeft = "10px";
+      deleteBtn.addEventListener("click", function (e) {
+        e.stopPropagation(); // Prevent the header's click event
+        deleteLandmark(point._id);
+      });
+      btnContainer.appendChild(deleteBtn);
+    }
+
+    details.appendChild(btnContainer);
+    li.appendChild(header);
+    li.appendChild(details);
+    list.appendChild(li);
+  });
+};
+
+// Initialize search and filter functionality when document is ready
+document.addEventListener("DOMContentLoaded", function () {
+  // ... existing code ...
+
+  // Initialize search and filter if the function exists
+  if (typeof initSearchAndFilter === "function") {
+    // Wait for landmarks to be loaded
+    setTimeout(initSearchAndFilter, 1000);
+  }
+});
 
 // Modal handling - Add authentication modals
 const addNotesModal = document.getElementById("addNotesModal");
@@ -466,7 +690,18 @@ document.getElementById("addNotesBtn").addEventListener("click", function () {
     return;
   }
 
-  currentLandmarkIndex = landmarks.length - 1; // Default to the last added landmark
+  // Don't automatically default to the last landmark anymore
+  // Only set to last landmark if no explicit selection has been made yet
+  if (
+    currentLandmarkIndex === undefined ||
+    currentLandmarkIndex >= landmarks.length
+  ) {
+    currentLandmarkIndex = landmarks.length - 1;
+    alert(
+      "No landmark explicitly selected. Using the most recent landmark. Use the 'Select' button to choose a specific landmark."
+    );
+  }
+
   const landmark = landmarks[currentLandmarkIndex];
 
   // Prefill form with existing data if available
