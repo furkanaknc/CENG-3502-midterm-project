@@ -51,11 +51,9 @@ router.post("/", async (req, res) => {
 
     // Validate landmarks
     if (!landmarks || landmarks.length === 0) {
-      return res
-        .status(400)
-        .json({
-          message: "At least one landmark is required for a visit plan",
-        });
+      return res.status(400).json({
+        message: "At least one landmark is required for a visit plan",
+      });
     }
 
     // Check if all landmarks exist
@@ -91,64 +89,6 @@ router.post("/", async (req, res) => {
     );
 
     res.status(201).json(populatedPlan);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-router.put("/:id", async (req, res) => {
-  try {
-    const { name, description, landmarks, category, planned_date } = req.body;
-
-    let visitPlan = await VisitPlan.findById(req.params.id);
-
-    if (!visitPlan) {
-      return res.status(404).json({ message: "Visit plan not found" });
-    }
-
-    // Check if the visit plan belongs to the current user
-    if (visitPlan.user.toString() !== req.user._id.toString()) {
-      return res
-        .status(401)
-        .json({ message: "Not authorized to update this visit plan" });
-    }
-
-    // Check if landmarks are provided and validate them
-    if (landmarks && landmarks.length > 0) {
-      // Check if all landmarks exist and belong to the user
-      for (const item of landmarks) {
-        const landmark = await Landmark.findById(item.landmark);
-        if (!landmark) {
-          return res
-            .status(404)
-            .json({ message: `Landmark with ID ${item.landmark} not found` });
-        }
-        // Check if the landmark belongs to the current user
-        if (landmark.user.toString() !== req.user._id.toString()) {
-          return res.status(401).json({
-            message: `Not authorized to add landmark ${item.landmark} to visit plan`,
-          });
-        }
-      }
-    }
-
-    // Build visit plan object
-    const visitPlanFields = {};
-    if (name) visitPlanFields.name = name;
-    if (description !== undefined) visitPlanFields.description = description;
-    if (landmarks) visitPlanFields.landmarks = landmarks;
-    if (category) visitPlanFields.category = category;
-    if (planned_date !== undefined) visitPlanFields.planned_date = planned_date;
-
-    // Update visit plan
-    visitPlan = await VisitPlan.findByIdAndUpdate(
-      req.params.id,
-      { $set: visitPlanFields },
-      { new: true }
-    ).populate("landmarks.landmark");
-
-    res.json(visitPlan);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

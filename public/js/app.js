@@ -1,5 +1,5 @@
 // Initialize map
-var map = L.map("map").setView([20, 0], 2); 
+var map = L.map("map").setView([20, 0], 2);
 
 // Add OpenStreetMap tile layer
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -353,7 +353,7 @@ function updateLandmarkList() {
     viewBtn.textContent = "View on Map";
     viewBtn.className = "view-landmark-btn";
     viewBtn.addEventListener("click", function (e) {
-      e.stopPropagation(); 
+      e.stopPropagation();
       map.setView([point.latitude, point.longitude], 13);
 
       // Find and open the corresponding marker popup
@@ -373,7 +373,7 @@ function updateLandmarkList() {
     selectBtn.style.marginLeft = "10px";
     selectBtn.style.backgroundColor = "#28a745";
     selectBtn.addEventListener("click", function (e) {
-      e.stopPropagation(); 
+      e.stopPropagation();
       currentLandmarkIndex = index;
 
       // Give visual feedback to show this landmark is selected
@@ -392,13 +392,12 @@ function updateLandmarkList() {
 
     // Add visited button if the landmark has an ID
     if (point._id) {
-      
       let editBtn = document.createElement("button");
       editBtn.textContent = "Edit";
       editBtn.className = "edit-button";
       editBtn.style.marginLeft = "10px";
       editBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         editLandmark(point._id);
       });
       btnContainer.appendChild(editBtn);
@@ -417,7 +416,7 @@ function updateLandmarkList() {
       visitBtn.className = visitBtnClass;
       visitBtn.style.marginLeft = "10px";
       visitBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         toggleVisitStatus(point._id);
       });
       btnContainer.appendChild(visitBtn);
@@ -429,7 +428,7 @@ function updateLandmarkList() {
       historyBtn.style.marginLeft = "10px";
       historyBtn.style.backgroundColor = "#17a2b8";
       historyBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         viewVisitHistory(point._id);
       });
       btnContainer.appendChild(historyBtn);
@@ -440,7 +439,7 @@ function updateLandmarkList() {
       deleteBtn.className = "delete-button";
       deleteBtn.style.marginLeft = "10px";
       deleteBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         deleteLandmark(point._id);
       });
       btnContainer.appendChild(deleteBtn);
@@ -582,7 +581,7 @@ window.updateLandmarkListWithArray = function (landmarksToShow) {
       editBtn.className = "edit-button";
       editBtn.style.marginLeft = "10px";
       editBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         editLandmark(point._id);
       });
       btnContainer.appendChild(editBtn);
@@ -601,7 +600,7 @@ window.updateLandmarkListWithArray = function (landmarksToShow) {
       visitBtn.className = visitBtnClass;
       visitBtn.style.marginLeft = "10px";
       visitBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         toggleVisitStatus(point._id);
       });
       btnContainer.appendChild(visitBtn);
@@ -613,7 +612,7 @@ window.updateLandmarkListWithArray = function (landmarksToShow) {
       historyBtn.style.marginLeft = "10px";
       historyBtn.style.backgroundColor = "#17a2b8";
       historyBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         viewVisitHistory(point._id);
       });
       btnContainer.appendChild(historyBtn);
@@ -624,7 +623,7 @@ window.updateLandmarkListWithArray = function (landmarksToShow) {
       deleteBtn.className = "delete-button";
       deleteBtn.style.marginLeft = "10px";
       deleteBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         deleteLandmark(point._id);
       });
       btnContainer.appendChild(deleteBtn);
@@ -1686,14 +1685,6 @@ function createPlanCard(plan) {
     viewPlanOnMap(plan);
   });
 
-  // Edit Plan button
-  const editBtn = document.createElement("button");
-  editBtn.className = "edit-plan-btn";
-  editBtn.textContent = "Edit Plan";
-  editBtn.addEventListener("click", () => {
-    editVisitPlan(plan);
-  });
-
   // Delete Plan button
   const deleteBtn = document.createElement("button");
   deleteBtn.className = "delete-plan-btn";
@@ -1703,7 +1694,6 @@ function createPlanCard(plan) {
   });
 
   actions.appendChild(viewBtn);
-  actions.appendChild(editBtn);
   actions.appendChild(deleteBtn);
   details.appendChild(actions);
 
@@ -1777,12 +1767,6 @@ function viewPlanOnMap(plan) {
       maxZoom: 15,
     });
   }
-}
-
-// Edit a visit plan
-function editVisitPlan(plan) {
-  alert("Edit plan functionality will be implemented soon!");
-  // Future implementation: Open the plan form prefilled with the plan data
 }
 
 // Delete a visit plan
