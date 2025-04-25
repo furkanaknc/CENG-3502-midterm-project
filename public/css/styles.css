@@ -232,29 +232,36 @@ button:hover {
 
 /* Landmark list styling */
 .landmark-list-item {
-  list-style: none;
+  border: 1px solid #ccc;
   margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 5px;
   overflow: hidden;
+  list-style: none;
+}
+
+/* Selected landmark styling */
+.landmark-list-item.selected-landmark {
+  border: 2px solid #28a745;
+  background-color: rgba(40, 167, 69, 0.1);
 }
 
 .landmark-header {
+  background-color: #f8f9fa;
   padding: 10px;
-  background-color: #f1f1f1;
-  font-weight: bold;
   cursor: pointer;
+  font-weight: bold;
   position: relative;
 }
 
 .landmark-header:hover {
-  background-color: #e1e1e1;
+  background-color: #e9ecef;
 }
 
 .landmark-header::after {
   content: "▼";
   position: absolute;
   right: 10px;
+  top: 10px;
 }
 
 .landmark-details {
@@ -264,9 +271,23 @@ button:hover {
 }
 
 .view-landmark-btn {
-  padding: 5px 10px;
-  margin-top: 10px;
-  font-size: 12px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  margin: 5px 0;
+}
+
+.select-landmark-btn {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  margin: 5px 0;
+}
+
+.select-landmark-btn:hover {
+  background-color: #218838;
 }
 
 .current-notes {
@@ -393,4 +414,50 @@ button:hover {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+}
+
+/* Search and Filter styling */
+.search-filter-container {
+  width: 80%;
+  margin: 20px auto;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.search-filter-container h3 {
+  margin-top: 0;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.search-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.search-filter-row .form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-filter-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.search-filter-buttons button {
+  min-width: 100px;
+}
+
+#resetFilters {
+  background-color: #6c757d;
+}
+
+#resetFilters:hover {
+  background-color: #5a6268;
 }
