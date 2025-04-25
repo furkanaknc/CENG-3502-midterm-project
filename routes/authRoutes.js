@@ -11,9 +11,7 @@ const generateToken = (userId) => {
   return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: "30d" });
 };
 
-// @route   POST /api/auth/register
-// @desc    Register a new user
-// @access  Public
+
 router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -48,9 +46,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// @route   POST /api/auth/login
-// @desc    Login user and return token
-// @access  Public
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
