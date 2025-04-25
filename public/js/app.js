@@ -1,5 +1,5 @@
 // Initialize map
-var map = L.map("map").setView([20, 0], 2); // Default global view
+var map = L.map("map").setView([20, 0], 2); 
 
 // Add OpenStreetMap tile layer
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -282,7 +282,7 @@ map.on("click", function (e) {
   landmarks.push({
     latitude: lat,
     longitude: lng,
-    name: defaultName, // Now using a more descriptive default name
+    name: defaultName,
   });
 
   updateLandmarkList();
@@ -353,7 +353,7 @@ function updateLandmarkList() {
     viewBtn.textContent = "View on Map";
     viewBtn.className = "view-landmark-btn";
     viewBtn.addEventListener("click", function (e) {
-      e.stopPropagation(); // Prevent the header's click event
+      e.stopPropagation(); 
       map.setView([point.latitude, point.longitude], 13);
 
       // Find and open the corresponding marker popup
@@ -373,7 +373,7 @@ function updateLandmarkList() {
     selectBtn.style.marginLeft = "10px";
     selectBtn.style.backgroundColor = "#28a745";
     selectBtn.addEventListener("click", function (e) {
-      e.stopPropagation(); // Prevent the header's click event
+      e.stopPropagation(); 
       currentLandmarkIndex = index;
 
       // Give visual feedback to show this landmark is selected
@@ -392,13 +392,13 @@ function updateLandmarkList() {
 
     // Add visited button if the landmark has an ID
     if (point._id) {
-      // Edit button
+      
       let editBtn = document.createElement("button");
       editBtn.textContent = "Edit";
       editBtn.className = "edit-button";
       editBtn.style.marginLeft = "10px";
       editBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); // Prevent the header's click event
+        e.stopPropagation(); 
         editLandmark(point._id);
       });
       btnContainer.appendChild(editBtn);
@@ -417,7 +417,7 @@ function updateLandmarkList() {
       visitBtn.className = visitBtnClass;
       visitBtn.style.marginLeft = "10px";
       visitBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); // Prevent the header's click event
+        e.stopPropagation(); 
         toggleVisitStatus(point._id);
       });
       btnContainer.appendChild(visitBtn);
@@ -429,7 +429,7 @@ function updateLandmarkList() {
       historyBtn.style.marginLeft = "10px";
       historyBtn.style.backgroundColor = "#17a2b8";
       historyBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); // Prevent the header's click event
+        e.stopPropagation(); 
         viewVisitHistory(point._id);
       });
       btnContainer.appendChild(historyBtn);
@@ -440,7 +440,7 @@ function updateLandmarkList() {
       deleteBtn.className = "delete-button";
       deleteBtn.style.marginLeft = "10px";
       deleteBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); // Prevent the header's click event
+        e.stopPropagation(); 
         deleteLandmark(point._id);
       });
       btnContainer.appendChild(deleteBtn);
@@ -582,7 +582,7 @@ window.updateLandmarkListWithArray = function (landmarksToShow) {
       editBtn.className = "edit-button";
       editBtn.style.marginLeft = "10px";
       editBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); // Prevent the header's click event
+        e.stopPropagation(); 
         editLandmark(point._id);
       });
       btnContainer.appendChild(editBtn);
@@ -601,7 +601,7 @@ window.updateLandmarkListWithArray = function (landmarksToShow) {
       visitBtn.className = visitBtnClass;
       visitBtn.style.marginLeft = "10px";
       visitBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); // Prevent the header's click event
+        e.stopPropagation(); 
         toggleVisitStatus(point._id);
       });
       btnContainer.appendChild(visitBtn);
@@ -613,7 +613,7 @@ window.updateLandmarkListWithArray = function (landmarksToShow) {
       historyBtn.style.marginLeft = "10px";
       historyBtn.style.backgroundColor = "#17a2b8";
       historyBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); // Prevent the header's click event
+        e.stopPropagation(); 
         viewVisitHistory(point._id);
       });
       btnContainer.appendChild(historyBtn);
@@ -624,7 +624,7 @@ window.updateLandmarkListWithArray = function (landmarksToShow) {
       deleteBtn.className = "delete-button";
       deleteBtn.style.marginLeft = "10px";
       deleteBtn.addEventListener("click", function (e) {
-        e.stopPropagation(); // Prevent the header's click event
+        e.stopPropagation(); 
         deleteLandmark(point._id);
       });
       btnContainer.appendChild(deleteBtn);
@@ -654,6 +654,7 @@ const visitedModal = document.getElementById("visitedModal");
 const planVisitModal = document.getElementById("planVisitModal");
 const visitHistoryModal = document.getElementById("visitHistoryModal");
 const authModal = document.getElementById("authModal");
+const viewPlansModal = document.getElementById("viewPlansModal");
 
 // Close buttons
 document.getElementById("closeNotesModal").onclick = () =>
@@ -666,6 +667,8 @@ document.getElementById("closeVisitHistoryModal").onclick = () =>
   (visitHistoryModal.style.display = "none");
 document.getElementById("closeAuthModal").onclick = () =>
   (authModal.style.display = "none");
+document.getElementById("closeViewPlansModal").onclick = () =>
+  (viewPlansModal.style.display = "none");
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function (event) {
@@ -675,6 +678,7 @@ window.onclick = function (event) {
   if (event.target === visitHistoryModal)
     visitHistoryModal.style.display = "none";
   if (event.target === authModal) authModal.style.display = "none";
+  if (event.target === viewPlansModal) viewPlansModal.style.display = "none";
 };
 
 // Add Notes Button - Require authentication
@@ -825,7 +829,7 @@ document.getElementById("visitedBtn").addEventListener("click", function () {
     });
 });
 
-// Create Visiting Plan Button - Updated to use authenticatedFetch
+// Create Visiting Plan Button - Updated to work with VisitPlan model
 document.getElementById("planVisitBtn").addEventListener("click", function () {
   if (!isLoggedIn()) {
     alert("Please log in to create a visiting plan.");
@@ -838,8 +842,10 @@ document.getElementById("planVisitBtn").addEventListener("click", function () {
     return;
   }
 
-  // Reset selections
-  selectedLandmarks = [];
+  // Reset form fields
+  document.getElementById("planName").value = "My Visiting Plan";
+  document.getElementById("planDescription").value = "";
+  document.getElementById("planDate").value = "";
 
   // Update the plan visit modal to show checkboxes for landmarks
   const landmarkSelectionDiv = document.getElementById("landmarkSelection");
@@ -1013,7 +1019,7 @@ function updateVisitButtonsForLandmark(landmarkId) {
   updateLandmarkList();
 }
 
-// Handle Plan Form Submission - Updated to use authenticatedFetch
+// Handle Plan Form Submission - Updated to use VisitPlan API without category
 document.getElementById("planForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
@@ -1023,7 +1029,10 @@ document.getElementById("planForm").addEventListener("submit", function (e) {
     return;
   }
 
-  const visitorName = document.getElementById("visitorName").value;
+  // Get plan metadata
+  const planName = document.getElementById("planName").value;
+  const planDescription = document.getElementById("planDescription").value;
+  const planDate = document.getElementById("planDate").value;
 
   // Get all checked landmark checkboxes
   const checkedLandmarks = document.querySelectorAll(
@@ -1035,61 +1044,38 @@ document.getElementById("planForm").addEventListener("submit", function (e) {
     return;
   }
 
-  // Create an array of promises for each selected landmark
-  const updatePromises = Array.from(checkedLandmarks).map((checkbox) => {
+  // Build landmark array for visit plan
+  const planLandmarks = Array.from(checkedLandmarks).map((checkbox, index) => {
     const landmarkId = checkbox.value;
-    const landmarkIndex = parseInt(checkbox.dataset.index);
     const noteInput = document.getElementById(`note-${landmarkId}`);
     const notes = noteInput ? noteInput.value : "";
 
-    // Find the landmark
-    const landmark = landmarks[landmarkIndex];
-
-    // Simply use the new note directly - no formatting or prefixes
-    const updatedNotes = notes;
-
-    // Update landmark notes with authentication
-    return authenticatedFetch(`${API_BASE_URL}/landmarks/${landmarkId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        notes: updatedNotes,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Update local data
-        landmarks[landmarkIndex].notes = updatedNotes;
-
-        // Update marker popup content
-        if (markers[landmarkIndex]) {
-          markers[landmarkIndex].setPopupContent(
-            createPopupContent({
-              _id: landmarkId,
-              name: landmark.name,
-              location: {
-                latitude: landmark.latitude,
-                longitude: landmark.longitude,
-              },
-              description: landmark.description,
-              category: landmark.category,
-              notes: updatedNotes,
-            })
-          );
-        }
-
-        return data;
-      });
+    return {
+      landmark: landmarkId,
+      notes: notes,
+      visit_order: index + 1,
+    };
   });
 
-  // Wait for all updates to complete
-  Promise.all(updatePromises)
-    .then((results) => {
-      alert(`Visiting plan created for ${checkedLandmarks.length} landmarks!`);
+  // Create visit plan with the new API - no category needed
+  authenticatedFetch(`${API_BASE_URL}/visitplans`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: planName,
+      description: planDescription,
+      planned_date: planDate || null,
+      landmarks: planLandmarks,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      alert(
+        `Visiting plan "${data.name}" created with ${data.landmarks.length} landmarks!`
+      );
       planVisitModal.style.display = "none";
-      updateLandmarkList(); // Update the list to show the new notes
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -1525,3 +1511,313 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   clearAuth();
   alert("You have been logged out successfully.");
 });
+
+// View Plans button click handler
+document.getElementById("viewPlansBtn").addEventListener("click", function () {
+  if (!isLoggedIn()) {
+    alert("Please log in to view your visiting plans.");
+    showAuthModal("login");
+    return;
+  }
+
+  // Clear the plan list
+  const planListContainer = document.getElementById("planList");
+  planListContainer.innerHTML =
+    '<div class="loading">Loading your plans...</div>';
+
+  // Fetch visit plans from the API
+  authenticatedFetch(`${API_BASE_URL}/visitplans`)
+    .then((response) => response.json())
+    .then((plans) => {
+      planListContainer.innerHTML = "";
+
+      if (plans.length === 0) {
+        planListContainer.innerHTML = `
+          <div class="no-plans-message">
+            <p>You don't have any visiting plans yet.</p>
+            <button id="createFirstPlan" class="btn-primary">Create Your First Plan</button>
+          </div>
+        `;
+
+        document
+          .getElementById("createFirstPlan")
+          .addEventListener("click", function () {
+            viewPlansModal.style.display = "none";
+            document.getElementById("planVisitBtn").click();
+          });
+      } else {
+        // Update heading
+        document.querySelector(
+          ".visit-plans-container h3"
+        ).textContent = `Your Visit Plans (${plans.length})`;
+
+        // Display each plan (no longer filtering by category)
+        plans.forEach((plan) => {
+          const planCard = createPlanCard(plan);
+          planListContainer.appendChild(planCard);
+        });
+      }
+
+      // Show the modal
+      viewPlansModal.style.display = "block";
+    })
+    .catch((error) => {
+      console.error("Error fetching visit plans:", error);
+      planListContainer.innerHTML = `
+        <div class="error-message">
+          <p>Error loading your visit plans. Please try again later.</p>
+        </div>
+      `;
+      viewPlansModal.style.display = "block";
+    });
+});
+
+// Create a card for a visit plan
+function createPlanCard(plan) {
+  const planCard = document.createElement("div");
+  planCard.className = "visit-plan-card";
+
+  // Format planned date if exists
+  const plannedDateStr = plan.planned_date
+    ? new Date(plan.planned_date).toLocaleDateString()
+    : "No date specified";
+
+  // Create header
+  const header = document.createElement("div");
+  header.className = "visit-plan-header";
+  header.innerHTML = `
+    <h3 class="visit-plan-title">${plan.name}</h3>
+    <div class="visit-plan-meta">
+      <span>Created: ${new Date(plan.created_date).toLocaleDateString()}</span>
+      <span>Planned: ${plannedDateStr}</span>
+    </div>
+  `;
+
+  // Create plan details section (initially hidden)
+  const details = document.createElement("div");
+  details.className = "visit-plan-details";
+
+  // Add description if available
+  if (plan.description && plan.description.trim() !== "") {
+    const description = document.createElement("p");
+    description.className = "visit-plan-description";
+    description.textContent = plan.description;
+    details.appendChild(description);
+  }
+
+  // Create landmarks list
+  const landmarksList = document.createElement("ul");
+  landmarksList.className = "visit-plan-landmarks";
+
+  // Sort landmarks by visit_order if available
+  const sortedLandmarks = [...plan.landmarks].sort(
+    (a, b) => (a.visit_order || 0) - (b.visit_order || 0)
+  );
+
+  // Add each landmark to the list
+  sortedLandmarks.forEach((item, index) => {
+    const landmark = item.landmark;
+    if (!landmark) return; // Skip if landmark reference is missing
+
+    const li = document.createElement("li");
+    li.className = "plan-landmark-item";
+
+    // Create detailed landmark information
+    let landmarkInfo = `
+      <h4>${landmark.name || `Landmark #${index + 1}`}</h4>
+      <p class="landmark-location">Location: ${
+        landmark.location?.latitude || "N/A"
+      }, ${landmark.location?.longitude || "N/A"}</p>
+    `;
+
+    // Add category if available
+    if (landmark.category) {
+      landmarkInfo += `<p class="landmark-category">Category: ${landmark.category}</p>`;
+    }
+
+    // Add description if available
+    if (landmark.description && landmark.description.trim() !== "") {
+      landmarkInfo += `<p class="landmark-description">Description: ${landmark.description}</p>`;
+    }
+
+    // Add landmark's own notes if available
+    if (landmark.notes && landmark.notes.trim() !== "") {
+      landmarkInfo += `
+        <div class="landmark-notes">
+          <p>Landmark Notes:</p>
+          <pre>${landmark.notes}</pre>
+        </div>
+      `;
+    }
+
+    // Add landmark-specific plan notes if available
+    if (item.notes && item.notes.trim() !== "") {
+      landmarkInfo += `
+        <div class="plan-notes">
+          <p>Visit Plan Notes:</p>
+          <pre class="plan-landmark-notes">${item.notes}</pre>
+        </div>
+      `;
+    }
+
+    // Add visit status indication
+    const isVisitedLandmark = isVisited(landmark._id);
+    landmarkInfo += `
+      <p class="visit-status ${isVisitedLandmark ? "visited" : "not-visited"}">
+        Status: ${isVisitedLandmark ? "Visited" : "Not visited yet"}
+      </p>
+    `;
+
+    li.innerHTML = landmarkInfo;
+    landmarksList.appendChild(li);
+  });
+
+  details.appendChild(landmarksList);
+
+  // Add action buttons
+  const actions = document.createElement("div");
+  actions.className = "visit-plan-actions";
+
+  // View on Map button
+  const viewBtn = document.createElement("button");
+  viewBtn.className = "view-on-map-btn";
+  viewBtn.textContent = "View on Map";
+  viewBtn.addEventListener("click", () => {
+    viewPlanOnMap(plan);
+  });
+
+  // Edit Plan button
+  const editBtn = document.createElement("button");
+  editBtn.className = "edit-plan-btn";
+  editBtn.textContent = "Edit Plan";
+  editBtn.addEventListener("click", () => {
+    editVisitPlan(plan);
+  });
+
+  // Delete Plan button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete-plan-btn";
+  deleteBtn.textContent = "Delete Plan";
+  deleteBtn.addEventListener("click", () => {
+    deleteVisitPlan(plan._id);
+  });
+
+  actions.appendChild(viewBtn);
+  actions.appendChild(editBtn);
+  actions.appendChild(deleteBtn);
+  details.appendChild(actions);
+
+  // Add sections to card
+  planCard.appendChild(header);
+  planCard.appendChild(details);
+
+  // Toggle details visibility when header is clicked
+  header.addEventListener("click", () => {
+    if (details.style.display === "block") {
+      details.style.display = "none";
+    } else {
+      // Hide all other open details first
+      document.querySelectorAll(".visit-plan-details").forEach((el) => {
+        el.style.display = "none";
+      });
+      details.style.display = "block";
+    }
+  });
+
+  return planCard;
+}
+
+// View a plan on the map
+function viewPlanOnMap(plan) {
+  // Close the modal
+  viewPlansModal.style.display = "none";
+
+  if (!plan.landmarks || plan.landmarks.length === 0) {
+    alert("This plan doesn't have any landmarks to show on the map.");
+    return;
+  }
+
+  // Create bounds object to fit all landmarks
+  const bounds = L.latLngBounds();
+
+  // Add each landmark to bounds and highlight on map
+  plan.landmarks.forEach((item, index) => {
+    const landmark = item.landmark;
+    if (!landmark || !landmark.location) return;
+
+    const lat = landmark.location.latitude;
+    const lng = landmark.location.longitude;
+    bounds.extend([lat, lng]);
+
+    // Find if this landmark is already on our map
+    const landmarkIndex = landmarks.findIndex((l) => l._id === landmark._id);
+
+    if (landmarkIndex !== -1 && markers[landmarkIndex]) {
+      // Highlight existing marker
+      const marker = markers[landmarkIndex];
+      // Add a temporary highlight class or animation if needed
+
+      // Show popup with plan info
+      const popupContent = createPopupContent({
+        ...landmark,
+        name: `${landmark.name} (Plan: ${plan.name})`,
+        visit_order: item.visit_order ? `Visit order: ${item.visit_order}` : "",
+        plan_notes: item.notes,
+      });
+
+      marker.setPopupContent(popupContent);
+      marker.openPopup();
+    }
+  });
+
+  // Fit map to show all landmarks in the plan
+  if (bounds.isValid()) {
+    map.fitBounds(bounds, {
+      padding: [50, 50],
+      maxZoom: 15,
+    });
+  }
+}
+
+// Edit a visit plan
+function editVisitPlan(plan) {
+  alert("Edit plan functionality will be implemented soon!");
+  // Future implementation: Open the plan form prefilled with the plan data
+}
+
+// Delete a visit plan
+function deleteVisitPlan(planId) {
+  if (
+    confirm(
+      "Are you sure you want to delete this visiting plan? This action cannot be undone."
+    )
+  ) {
+    authenticatedFetch(`${API_BASE_URL}/visitplans/${planId}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Refresh the plans list
+          document.getElementById("viewPlansBtn").click();
+          alert("Visit plan deleted successfully!");
+        } else {
+          throw new Error("Failed to delete the plan");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting plan:", error);
+        alert("Error deleting visit plan. Please try again.");
+      });
+  }
+}
+
+// Connect "Create New Plan" button in the plans view
+document.getElementById("createNewPlan").addEventListener("click", function () {
+  // Close plans modal
+  viewPlansModal.style.display = "none";
+
+  // Open create plan modal
+  document.getElementById("planVisitBtn").click();
+});
+
+// End of application code

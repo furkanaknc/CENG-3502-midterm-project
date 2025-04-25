@@ -7,9 +7,6 @@ const { protect } = require("../middleware/authMiddleware");
 // Apply protection middleware to all routes
 router.use(protect);
 
-// @route   GET /api/visited
-// @desc    Get all visited landmarks for the logged-in user
-// @access  Private
 router.get("/", async (req, res) => {
   try {
     // Only fetch visited landmarks that belong to the current user
@@ -23,9 +20,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// @route   GET /api/visited/:id
-// @desc    Get visit history for specific landmark for the logged-in user
-// @access  Private
 router.get("/:id", async (req, res) => {
   try {
     // Only fetch visited landmarks that belong to the current user
@@ -47,9 +41,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// @route   POST /api/visited
-// @desc    Record a visited landmark
-// @access  Private
 router.post("/", async (req, res) => {
   try {
     const { landmarkId, visitor_name, additional_notes } = req.body;
@@ -73,7 +64,7 @@ router.post("/", async (req, res) => {
       visitor_name,
       additional_notes,
       visited_date: new Date(),
-      user: req.user._id, // Associate with the logged-in user
+      user: req.user._id,
     });
 
     await visitedLandmark.save();
@@ -90,9 +81,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// @route   PUT /api/visited/:id
-// @desc    Update a visit record
-// @access  Private
 router.put("/:id", async (req, res) => {
   try {
     const { visitor_name, additional_notes, visited_date } = req.body;
@@ -130,9 +118,6 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// @route   DELETE /api/visited/:id
-// @desc    Delete a visit record
-// @access  Private
 router.delete("/:id", async (req, res) => {
   try {
     const visitRecord = await VisitedLandmark.findById(req.params.id);

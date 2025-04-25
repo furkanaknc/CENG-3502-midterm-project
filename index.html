@@ -80,6 +80,7 @@
       <button id="addNotesBtn">Add Notes</button>
       <button id="visitedBtn">Visited Landmarks</button>
       <button id="planVisitBtn">Create Visiting Plans</button>
+      <button id="viewPlansBtn">View Visiting Plans</button>
     </div>
 
     <!-- Add Notes Modal -->
@@ -140,15 +141,56 @@
         <h2>Create Visiting Plan</h2>
         <form id="planForm">
           <div class="form-group">
-            <label for="visitorName">Your Name</label>
-            <input type="text" id="visitorName" required />
+            <label for="planName">Plan Name</label>
+            <input
+              type="text"
+              id="planName"
+              placeholder="My Visiting Plan"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="planDescription">Plan Description</label>
+            <textarea
+              id="planDescription"
+              rows="2"
+              placeholder="Brief description of your plan"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="planDate">Planned Visit Date (Optional)</label>
+            <input type="date" id="planDate" />
           </div>
           <!-- Landmark selection section -->
           <div id="landmarkSelection" class="form-group">
+            <h3>Select landmarks for your plan:</h3>
             <!-- Landmarks will be loaded here dynamically -->
           </div>
           <button type="submit">Save Plan</button>
         </form>
+      </div>
+    </div>
+
+    <!-- View Visiting Plans Modal -->
+    <div id="viewPlansModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeViewPlansModal">&times;</span>
+        <h2>Your Visiting Plans</h2>
+
+        <!-- Plan categories and filtering -->
+        <div class="plans-filter">
+          <button id="createNewPlan" class="btn-primary">
+            Create New Plan
+          </button>
+        </div>
+
+        <!-- Plan table container -->
+        <div class="visit-plans-container">
+          <h3>Your Visit Plans</h3>
+          <div class="plan-list" id="planList">
+            <!-- Plans will be loaded here dynamically -->
+          </div>
+        </div>
       </div>
     </div>
 

@@ -6,9 +6,7 @@ const { protect } = require("../middleware/authMiddleware");
 // Apply protection middleware to all routes
 router.use(protect);
 
-// @route   GET /api/landmarks
-// @desc    Get all landmarks for the logged-in user
-// @access  Private
+
 router.get("/", async (req, res) => {
   try {
     // Only return landmarks that belong to the logged-in user
@@ -20,9 +18,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// @route   GET /api/landmarks/:id
-// @desc    Get single landmark by ID
-// @access  Private
+
 router.get("/:id", async (req, res) => {
   try {
     const landmark = await Landmark.findById(req.params.id);
@@ -45,9 +41,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// @route   POST /api/landmarks
-// @desc    Create a new landmark
-// @access  Private
+
 router.post("/", async (req, res) => {
   try {
     const { name, latitude, longitude, description, category, notes } =
@@ -74,9 +68,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// @route   PUT /api/landmarks/:id
-// @desc    Update a landmark
-// @access  Private
+
 router.put("/:id", async (req, res) => {
   try {
     const { name, latitude, longitude, description, category, notes } =
@@ -122,9 +114,6 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// @route   DELETE /api/landmarks/:id
-// @desc    Delete a landmark
-// @access  Private
 router.delete("/:id", async (req, res) => {
   try {
     const landmark = await Landmark.findById(req.params.id);

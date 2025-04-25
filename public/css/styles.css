@@ -461,3 +461,396 @@ button:hover {
 #resetFilters:hover {
   background-color: #5a6268;
 }
+
+/* Visiting Plans Modal styling */
+#visitPlansList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.plan-item {
+  background-color: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border-left: 4px solid #28a745;
+  text-align: left;
+}
+
+.plan-header h3 {
+  margin-top: 0;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+.plan-details {
+  margin-top: 10px;
+}
+
+.plan-notes {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 3px solid #007bff;
+  max-height: 120px;
+  overflow-y: auto;
+  margin: 10px 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+}
+
+.plan-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.view-on-map-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.edit-plan-btn {
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.view-on-map-btn:hover {
+  background-color: #0069d9;
+}
+
+.edit-plan-btn:hover {
+  background-color: #e0a800;
+}
+
+/* Plan table styling */
+.plans-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background-color: #fff;
+}
+
+.plans-table th,
+.plans-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.plans-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+}
+
+.plans-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.plans-table td:nth-child(4) {
+  /* Notes column */
+  max-width: 250px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.plan-table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Plan category groups styling */
+.plan-category-groups {
+  display: none; /* Hidden by default */
+}
+
+.plan-category-group {
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.plan-category-heading {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 15px;
+  margin: 0;
+}
+
+.category-historical .plan-category-heading {
+  background-color: #dc3545; /* Red for historical */
+}
+
+.category-natural .plan-category-heading {
+  background-color: #28a745; /* Green for natural */
+}
+
+.category-cultural .plan-category-heading {
+  background-color: #007bff; /* Blue for cultural */
+}
+
+.category-other .plan-category-heading {
+  background-color: #6c757d; /* Gray for other */
+}
+
+/* Plan filtering controls */
+.plans-filter {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.plans-filter select {
+  margin-right: 10px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-width: 200px;
+}
+
+.plans-filter button {
+  padding: 8px 12px;
+  margin: 0 5px;
+  border-radius: 4px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.plans-filter button.active {
+  background-color: #007bff;
+}
+
+/* Actions column styling */
+.plan-actions-cell {
+  display: flex;
+  gap: 5px;
+}
+
+.plan-action-btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.view-plan-btn {
+  background-color: #007bff;
+}
+
+.edit-plan-btn {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+/* Visit Plan Styling */
+.plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.visit-plan-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.visit-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #f3f3f3;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.visit-plan-title {
+  margin: 0;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.visit-plan-meta {
+  font-size: 0.9em;
+  color: #666;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.category-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  color: white;
+  text-transform: capitalize;
+}
+
+.category-historical {
+  background-color: #dc3545;
+}
+
+.category-natural {
+  background-color: #28a745;
+}
+
+.category-cultural {
+  background-color: #007bff;
+}
+
+.category-other {
+  background-color: #6c757d;
+}
+
+.visit-plan-details {
+  padding: 15px;
+  display: none;
+}
+
+.visit-plan-description {
+  margin-bottom: 15px;
+  font-style: italic;
+  color: #555;
+}
+
+.visit-plan-landmarks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-landmark-item {
+  padding: 10px;
+  margin-bottom: 8px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.plan-landmark-item h4 {
+  margin: 0 0 5px 0;
+  color: #007bff;
+}
+
+.plan-landmark-notes {
+  font-size: 0.9em;
+  margin: 8px 0 0 0;
+  padding: 5px;
+  background-color: #f0f8ff;
+  border-left: 3px solid #007bff;
+  border-radius: 0 4px 4px 0;
+}
+
+.visit-plan-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.edit-plan-btn {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.delete-plan-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.view-on-map-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Enhanced styles for visit plan landmarks */
+.plan-landmark-item {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #007bff;
+}
+
+.plan-landmark-item h4 {
+  color: #007bff;
+  margin-top: 0;
+  font-size: 1.2em;
+}
+
+.landmark-location,
+.landmark-category,
+.landmark-description {
+  margin: 5px 0;
+  font-size: 0.95em;
+}
+
+.landmark-notes,
+.plan-notes {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 10px 0;
+}
+
+.landmark-notes p,
+.plan-notes p {
+  margin: 0 0 5px 0;
+  font-weight: 600;
+  color: #555;
+}
+
+.landmark-notes pre,
+.plan-notes pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.9em;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.visit-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.visit-status.visited {
+  background-color: #28a745;
+  color: white;
+}
+
+.visit-status.not-visited {
+  background-color: #dc3545;
+  color: white;
+}
